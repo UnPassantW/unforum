@@ -1,0 +1,19 @@
+#端口号
+server:
+  port: 1310
+
+#JDBC
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/unforum
+    username: root
+    password: 13155
+    type: com.alibaba.druid.pool.DruidDataSource
+
+#accessToken数据
+github:
+  client:
+    id: 73f8ee46b1910380454e
+    secret: 0a99eb611354abac7d43c90af75e74b681a9d8aa
+    Redirect_uri: http://localhost:1310/callback

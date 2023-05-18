@@ -30,11 +30,11 @@ public class GithubProvider {
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 String string = response.body().string();
-                 System.out.println("2"+string);
+                 //System.out.println("2"+string);
 
                 //解析得到的string 得到token
                 String accessToken = string.split("&")[0].split("=")[1];
-                 System.out.println("3"+accessToken);
+                 //System.out.println("3"+accessToken);
                 return accessToken;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -51,7 +51,7 @@ public class GithubProvider {
         try {
             Response response = client.newCall(request).execute();
             String userString = response.body().string();
-             System.out.println("5"+userString);
+             //System.out.println("5"+userString);
 
             //JACKSON把string对象转成GithubUser类对象
             ObjectMapper mapper = new ObjectMapper();
