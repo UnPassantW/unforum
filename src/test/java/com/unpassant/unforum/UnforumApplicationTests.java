@@ -1,16 +1,20 @@
 package com.unpassant.unforum;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.unpassant.unforum.dao.UserDao;
 import com.unpassant.unforum.dto.AccessTokenDTO;
 import com.unpassant.unforum.dto.GithubUser;
 import com.unpassant.unforum.model.User;
+import org.apache.ibatis.annotations.Param;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.List;
 
 @SpringBootTest
 class UnforumApplicationTests {
@@ -40,9 +44,17 @@ class UnforumApplicationTests {
     }
 
     @Test
+    void testgetby(){
+        QueryWrapper<User> qw = new QueryWrapper<User>();
+        qw.eq("token","1");
+        List<User> userList = userDao.selectList(qw);
+        System.out.println(userList);
+    }
+
+    @Test
     void testgetbyid(){
-        User user01 = userDao.selectById(1);
-        System.out.println(user01);
+        User user = userDao.selectById(7);
+        System.out.println(user);
     }
 
     @Test
