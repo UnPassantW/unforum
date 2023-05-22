@@ -17,3 +17,8 @@ github:
     id: 73f8ee46b1910380454e
     secret: 0a99eb611354abac7d43c90af75e74b681a9d8aa
     Redirect_uri: http://localhost:1310/callback
+
+#数据库驼峰转换
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

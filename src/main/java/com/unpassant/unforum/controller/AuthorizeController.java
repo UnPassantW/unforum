@@ -1,6 +1,6 @@
 package com.unpassant.unforum.controller;
 
-import com.unpassant.unforum.dao.UserDao;
+import com.unpassant.unforum.mapper.UserMapper;
 import com.unpassant.unforum.dto.AccessTokenDTO;
 import com.unpassant.unforum.dto.GithubUser;
 import com.unpassant.unforum.model.User;
@@ -30,7 +30,7 @@ public class AuthorizeController {
     private String clientRedirectUrl;
 
     @Autowired
-    private UserDao userDao;
+    private UserMapper userMapper;
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
@@ -47,15 +47,17 @@ public class AuthorizeController {
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         //System.out.println("4"+accessToken);
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if(githubUser != null){
+        if(githubUser != null && githubUser.getId() != null){
             User user = new User();
             String token = UUID.randomUUID().toString();
             user.setToken(token);
             user.setName(githubUser.getName());
-            user.setAccount_id(String.valueOf(githubUser.getId()));
-            user.setGmt_create(System.currentTimeMillis());
-            user.setGmt_modified(user.getGmt_create());
-            userDao.insert(user);
+            user.setAccountId(String.valueOf(githubUser.getId()));
+            user.setGmtCreate(System.currentTimeMillis());
+            user.setGmtModified(user.getGmtCreate());
+            user.setAvatarUrl(githubUser.getAvatar_url());
+            //System.out.println("test" + user);
+            userMapper.insert(user);
             response.addCookie(new Cookie("token",token));
             return "redirect:/";
         }else{

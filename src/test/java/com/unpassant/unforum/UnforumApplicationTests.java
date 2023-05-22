@@ -3,16 +3,13 @@ package com.unpassant.unforum;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.unpassant.unforum.dao.UserDao;
-import com.unpassant.unforum.dto.AccessTokenDTO;
-import com.unpassant.unforum.dto.GithubUser;
+import com.unpassant.unforum.mapper.PostMapper;
+import com.unpassant.unforum.mapper.UserMapper;
+import com.unpassant.unforum.model.Post;
 import com.unpassant.unforum.model.User;
-import org.apache.ibatis.annotations.Param;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.List;
 
@@ -20,19 +17,22 @@ import java.util.List;
 class UnforumApplicationTests {
 
     @Autowired
-    private UserDao userDao;
+    private UserMapper userMapper;
+
+    @Autowired
+    private PostMapper postMapper;
 
     @Test
     void testsave(){
         User user01 = new User();
-        user01.setAccount_id("2");
+        user01.setAccountId("2");
         user01.setName("Test");
-        userDao.insert(user01);
+        userMapper.insert(user01);
     }
 
     @Test
     void testdelete(){
-        userDao.deleteById(2);
+        userMapper.deleteById(2);
     }
 
     @Test
@@ -40,27 +40,34 @@ class UnforumApplicationTests {
         User user01 = new User();
         user01.setId(2);
         user01.setName("小丑");
-        userDao.updateById(user01);
+        userMapper.updateById(user01);
     }
 
     @Test
     void testgetby(){
         QueryWrapper<User> qw = new QueryWrapper<User>();
         qw.eq("token","1");
-        List<User> userList = userDao.selectList(qw);
+        List<User> userList = userMapper.selectList(qw);
         System.out.println(userList);
     }
 
     @Test
     void testgetbyid(){
-        User user = userDao.selectById(7);
+        User user = userMapper.selectById(7);
         System.out.println(user);
     }
+    @Test
+    void testselectlist(){
+        QueryWrapper<com.unpassant.unforum.model.Post> Post = new QueryWrapper<>();
+        List<Post> posts = postMapper.selectList(Post);
+        System.out.println(posts);
+    }
+
 
     @Test
     void testgetbypage(){
         IPage page = new Page(1,1);
-        userDao.selectPage(page,null);
+        userMapper.selectPage(page,null);
         System.out.println("当前页码值为：" + page.getCurrent());
         System.out.println("每页显示数为：" + page.getSize());
         System.out.println("总共页数为：" + page.getPages());
