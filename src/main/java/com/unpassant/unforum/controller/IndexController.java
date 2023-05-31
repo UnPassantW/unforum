@@ -1,6 +1,7 @@
 package com.unpassant.unforum.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.unpassant.unforum.dto.PaginationDTO;
 import com.unpassant.unforum.dto.PostDTO;
 import com.unpassant.unforum.mapper.PostMapper;
 import com.unpassant.unforum.mapper.UserMapper;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -29,25 +31,28 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(HttpServletRequest request,
-                        Model model){
+                        Model model,
+                        @RequestParam(name = "page", defaultValue = "1") Integer page,
+                        @RequestParam(name = "size", defaultValue = "7") Integer size
+    ) {
 
         Cookie[] cookies = request.getCookies();
-        if (cookies != null && cookies.length !=0)
+        if (cookies != null && cookies.length != 0)
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("token")) {
                     String token = cookie.getValue();
 
                     //mybatis 按条件查询
                     QueryWrapper<User> qw = new QueryWrapper<User>();
-                    qw.eq("token",token);
+                    qw.eq("token", token);
                     User user = userMapper.selectOne(qw);
 
                     //测试页面打算存入session的cookie用户
                     //System.out.println(user);
 
-                    if (user != null){
+                    if (user != null) {
 
-                        request.getSession().setAttribute("user",user);
+                        request.getSession().setAttribute("user", user);
                     }
                     break;
                 }
@@ -55,8 +60,8 @@ public class IndexController {
 
 
         //查询论坛主页面内容
-        List<PostDTO> postList = postService.list();
-        model.addAttribute("posts",postList);
+        PaginationDTO pagination = postService.list(page,size);
+        model.addAttribute("pagination", pagination);
 
         return "index";
     }
