@@ -1,10 +1,10 @@
 package com.unpassant.unforum.controller;
 
-import com.unpassant.unforum.mapper.UserMapper;
 import com.unpassant.unforum.dto.AccessTokenDTO;
 import com.unpassant.unforum.dto.GithubUser;
 import com.unpassant.unforum.model.User;
 import com.unpassant.unforum.provider.GithubProvider;
+import com.unpassant.unforum.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -30,7 +30,7 @@ public class AuthorizeController {
     private String clientRedirectUrl;
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     @GetMapping("/callback")
     public String callback(@RequestParam(name="code") String code,
@@ -43,21 +43,16 @@ public class AuthorizeController {
         accessTokenDTO.setCode(code);
         accessTokenDTO.setRedirect_uri(clientRedirectUrl);
         accessTokenDTO.setState(state);
-        //System.out.println("1"+accessTokenDTO);
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
-        //System.out.println("4"+accessToken);
         GithubUser githubUser = githubProvider.getUser(accessToken);
-        if(githubUser != null && githubUser.getId() != null){
+        if (githubUser != null && githubUser.getId() != null){
             User user = new User();
             String token = UUID.randomUUID().toString();
             user.setToken(token);
             user.setName(githubUser.getName());
             user.setAccountId(String.valueOf(githubUser.getId()));
-            user.setGmtCreate(System.currentTimeMillis());
-            user.setGmtModified(user.getGmtCreate());
             user.setAvatarUrl(githubUser.getAvatar_url());
-            //System.out.println("test" + user);
-            userMapper.insert(user);
+            userService.createOrUpdate(user);
             response.addCookie(new Cookie("token",token));
             return "redirect:/";
         }else{
@@ -65,6 +60,15 @@ public class AuthorizeController {
             return "redirect:/";
         }
 
-        //System.out.println("6"+user);
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request,
+                         HttpServletResponse response){
+        request.getSession().removeAttribute("user");
+        Cookie cookie = new Cookie("token", null);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+        return "redirect:/";
     }
 }

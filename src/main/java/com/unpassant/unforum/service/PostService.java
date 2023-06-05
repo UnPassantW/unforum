@@ -1,5 +1,6 @@
 package com.unpassant.unforum.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.unpassant.unforum.dto.PaginationDTO;
@@ -35,18 +36,27 @@ public class PostService {
 
 
         //分页总数
+        Integer totalPage;
+        //分页总数
         Integer totalCount = postMapper.selectCount(null);
-        paginationDTO.setPagination(totalCount,page,size);
+
+        //计算totalPage
+        if (totalCount % size == 0) {
+            totalPage = totalCount / size;
+        } else {
+            totalPage = totalCount / size + 1;
+        }
 
         //页码越界处理
+        if (page > totalPage) {
+            page = totalPage;
+        }
         if (page < 1) {
             page = 1;
         }
-        if (page > paginationDTO.getTotalPage()) {
-            page = paginationDTO.getTotalPage();
-        }
 
-        //越界判断后查询
+        paginationDTO.setPagination(totalPage,page);
+
         //定义分页
         IPage ipage = new Page(page, size);
         //分页查询
@@ -78,5 +88,77 @@ public class PostService {
         paginationDTO.setPosts(postDTOList);
 
         return paginationDTO;
+    }
+
+    //查找某用户所发的帖子
+    public PaginationDTO list(int userId, Integer page, Integer size) {
+        PaginationDTO paginationDTO = new PaginationDTO();
+
+
+        //定义查询条件
+        QueryWrapper<Post> qw = new QueryWrapper<>();
+        qw.eq("creator",userId);
+
+        Integer totalPage;
+        //分页总数
+        Integer totalCount = postMapper.selectCount(qw);
+
+        //计算totalPage
+        if (totalCount % size == 0) {
+            totalPage = totalCount / size;
+        } else {
+            totalPage = totalCount / size + 1;
+        }
+
+        //页码越界处理
+        if (page > totalPage) {
+            page = totalPage;
+        }
+        if (page < 1) {
+            page = 1;
+        }
+
+        paginationDTO.setPagination(totalPage,page);
+
+        //越界判断后查询
+        //定义分页
+        IPage ipage = new Page(page, size);
+
+        //分页查询
+        postMapper.selectPage(ipage,qw);
+        List<Post> posts = ipage.getRecords();
+
+        //通过PostDTO关联User以便获取Avatar头像地址
+        List<PostDTO> postDTOList = new ArrayList<>();
+        for (Post post : posts) {
+            User user = userMapper.selectById(post.getCreator());
+            PostDTO postDTO = new PostDTO();
+            BeanUtils.copyProperties(post,postDTO);
+            postDTO.setUser(user);
+            postDTOList.add(postDTO);
+        }
+        paginationDTO.setPosts(postDTOList);
+
+        return paginationDTO;
+    }
+
+    public PostDTO selectById(Integer id) {
+        Post post = postMapper.selectById(id);
+        PostDTO postDTO = new PostDTO();
+        BeanUtils.copyProperties(post,postDTO);
+        User user = userMapper.selectById(post.getCreator());
+        postDTO.setUser(user);
+        return postDTO;
+    }
+
+    public void createOrUpdate(Post post) {
+        if (String.valueOf(post.getId()).equals("")){
+            post.setGmtCreate(System.currentTimeMillis());
+            post.setGmtModified(post.getGmtCreate());
+            postMapper.insert(post);
+        }else{
+            post.setGmtModified(post.getGmtCreate());
+            postMapper.update(post,null);
+        }
     }
 }

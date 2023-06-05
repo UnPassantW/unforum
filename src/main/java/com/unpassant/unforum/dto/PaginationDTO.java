@@ -18,14 +18,8 @@ public class PaginationDTO {
 
 
     //手敲分页逻辑功能
-    public void setPagination(Integer totalCount, Integer page, Integer size) {
-
-        //计算totalPage
-        if (totalCount % size == 0) {
-            totalPage = totalCount / size;
-        } else {
-            totalPage = totalCount / size + 1;
-        }
+    public void setPagination(Integer totalPage, Integer page) {
+        this.totalPage=totalPage;
 
         //设置当前页码值等于传过来的值
         this.page=page;

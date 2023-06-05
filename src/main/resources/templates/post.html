@@ -1,0 +1,64 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${post.title}"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
+    <link rel="stylesheet" href="/css/forum.css"/>
+</head>
+
+<body>
+
+<div th:insert="navigation :: nav"></div>
+
+<div class="container-fluid main profile" >
+    <div class="row">
+        <div class="col-lg-9 col-md-12 col-xs-12">
+            <h4><span th:text="${post.title}"></span></h4>
+            <span class="desc-text">
+                发布者：<span th:text="${post.user.name}"></span> |
+                发布时间：<span th:text="${#dates.format(post.gmtCreate,'yyyy-MMMM-dd  HH:mm')}"></span> |
+                浏览次数：<span th:text="${post.viewCount}"></span>
+            </span>
+        <hr>
+        <div class="col-lg-12 col-md-12 col-xs-12" th:text="${post.description}"></div>
+        <hr class="col-lg-12 col-md-12 col-xs-12">
+        <a class="community-menu" th:href="@{'/publish/'+${post.id}}"
+           th:if="${session.user != null && session.user.id == post.creator}">
+            <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+            编辑
+        </a>
+
+
+        </div>
+        <div class="col-lg-3 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12">
+                <h4>发布者</h4>
+                <div class="media">
+                    <div class="media-left">
+                        <a href="#">
+                            <img class="media-object" th:src="${post.user.avatarUrl}">
+                        </a>
+                    </div>
+                    <div class="media-body">
+                        <h5 class="media-heading">
+                            <span th:text="${post.user.name}"></span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+            <hr  class="col-lg-12 col-md-12 col-xs-12">
+            <div class="col-lg-12 col-md-12 col-xs-12">
+                <h4>相关帖子</h4>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+
+</body>
+</html>
