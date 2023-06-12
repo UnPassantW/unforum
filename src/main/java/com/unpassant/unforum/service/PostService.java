@@ -1,10 +1,13 @@
 package com.unpassant.unforum.service;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.unpassant.unforum.dto.PaginationDTO;
 import com.unpassant.unforum.dto.PostDTO;
+import com.unpassant.unforum.exception.CustomErrorCode;
+import com.unpassant.unforum.exception.CustomException;
 import com.unpassant.unforum.mapper.PostMapper;
 import com.unpassant.unforum.mapper.UserMapper;
 import com.unpassant.unforum.model.Post;
@@ -144,6 +147,10 @@ public class PostService {
 
     public PostDTO selectById(Integer id) {
         Post post = postMapper.selectById(id);
+        //异常处理
+        if(post == null){
+            throw new CustomException(CustomErrorCode.POST_NOT_FOUND);
+        }
         PostDTO postDTO = new PostDTO();
         BeanUtils.copyProperties(post,postDTO);
         User user = userMapper.selectById(post.getCreator());
@@ -152,13 +159,29 @@ public class PostService {
     }
 
     public void createOrUpdate(Post post) {
-        if (String.valueOf(post.getId()).equals("")){
+        if ( null == post.getId() || post.getId() == 0){
+            //创建帖子
             post.setGmtCreate(System.currentTimeMillis());
             post.setGmtModified(post.getGmtCreate());
+            post.setViewCount(0);
+            post.setLikeCount(0);
+            post.setCommentCount(0);
+            post.setVersion(1);
             postMapper.insert(post);
         }else{
-            post.setGmtModified(post.getGmtCreate());
-            postMapper.update(post,null);
+            //更新帖子
+            post.setGmtModified(System.currentTimeMillis());
+            int updated = postMapper.updateById(post);
+            if (updated != 1) {
+                throw new CustomException(CustomErrorCode.POST_NOT_FOUND);
+            }
         }
+    }
+
+    public void incView(Integer id) {
+        Post updatePost = postMapper.selectById(id);
+        updatePost.setViewCount(updatePost.getViewCount() + 1);
+
+        postMapper.updateById(updatePost);
     }
 }

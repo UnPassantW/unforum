@@ -1,36 +1,42 @@
 package com.unpassant.unforum;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.generator.FastAutoGenerator;
-import com.baomidou.mybatisplus.generator.fill.Column;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import com.baomidou.mybatisplus.generator.AutoGenerator;
+import com.baomidou.mybatisplus.generator.config.DataSourceConfig;
+import com.baomidou.mybatisplus.generator.config.GlobalConfig;
+import com.baomidou.mybatisplus.generator.config.PackageConfig;
+import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 
 public class MybatisPlusGenerator {
     public static void main(String[] args) {
-        FastAutoGenerator.create("jdbc:mysql://localhost:3306/unforum","root","13155")
-                // 全局配置
-                .globalConfig((scanner, builder) -> builder.author(scanner.apply("请输入作者名称？")).fileOverride())
-                // 包配置
-                .packageConfig((scanner, builder) -> builder.parent(scanner.apply("请输入包名？")))
-                // 策略配置
-                .strategyConfig((scanner, builder) -> builder.addInclude(getTables(scanner.apply("请输入表名，多个英文逗号分隔？所有输入 all")))
-                        .controllerBuilder().enableRestStyle().enableHyphenStyle()
-                        .entityBuilder().enableLombok().addTableFills(
-                                new Column("create_time", FieldFill.INSERT)
-                        ).build())
-                /*
-                    模板引擎配置，默认 Velocity 可选模板引擎 Beetl 或 Freemarker
-                   .templateEngine(new BeetlTemplateEngine())
-                   .templateEngine(new FreemarkerTemplateEngine())
-                 */
-                .execute();
+        AutoGenerator autoGenerator = new AutoGenerator();
+        DataSourceConfig datasource = new DataSourceConfig();
 
-    }
-    // 处理 all 情况
-    protected static List<String> getTables(String tables) {
-        return "all".equals(tables) ? Collections.emptyList() : Arrays.asList(tables.split(","));
+        datasource.setDriverName("com.mysql.cj.jdbc.Driver");
+        datasource.setUrl("jdbc:mysql://localhost:3306/unforum");
+        datasource.setUsername("root");
+        datasource.setPassword("13155");
+        autoGenerator.setDataSource(datasource);
+
+        //全局配置
+        GlobalConfig globalConfig = new GlobalConfig();
+        globalConfig.setAuthor("UnPassant");
+        globalConfig.setOutputDir("D:/Program Study/Practical_Training/MP生成器");
+        globalConfig.setOpen(false);
+        globalConfig.setFileOverride(false);
+        autoGenerator.setGlobalConfig(globalConfig);
+
+        //包配置
+        PackageConfig packageConfig = new PackageConfig();
+        packageConfig.setParent("com.unpassant");//设置生成的包名
+        packageConfig.setEntity("domain");//设置实体类包名
+        packageConfig.setMapper("dao");//设置数据层包名
+        autoGenerator.setPackageInfo(packageConfig);
+
+        //策略配置
+        StrategyConfig strategyConfig = new StrategyConfig();
+        strategyConfig.setEntityLombokModel(true);//设置是否启用Lombok
+        autoGenerator.setStrategy(strategyConfig);
+
+        autoGenerator.execute();
     }
 }

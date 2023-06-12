@@ -14,7 +14,6 @@ public class IndexController {
     @Autowired
     private PostService postService;
 
-
     @GetMapping("/")
     public String index(Model model,
                         @RequestParam(name = "page", defaultValue = "1") Integer page,

@@ -1,7 +1,6 @@
 package com.unpassant.unforum.controller;
 
 import com.unpassant.unforum.dto.PostDTO;
-import com.unpassant.unforum.mapper.PostMapper;
 import com.unpassant.unforum.model.Post;
 import com.unpassant.unforum.model.User;
 import com.unpassant.unforum.service.PostService;
@@ -63,7 +62,9 @@ public class PublishController {
         post.setDescription(description);
         post.setCreator(user.getId());
         post.setTags(tag);
-        post.setId(id);
+        if (id != null) {
+            post.setId(id);
+        }
 
         postService.createOrUpdate(post);
 

@@ -18,6 +18,8 @@ public class PostController {
     public String post(@PathVariable(name = "id") Integer id,
                        Model model){
         PostDTO postDTO = postService.selectById(id);
+        //增加阅读树
+        postService.incView(id);
         model.addAttribute("post",postDTO);
         return "post";
     }
