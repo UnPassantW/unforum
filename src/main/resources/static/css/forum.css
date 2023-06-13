@@ -28,12 +28,54 @@ body {
     margin-top: 15px;
 }
 
-.community-menu{
+.community-menu {
     color: #999;
     font-size: 15px;
 }
 
 /*回复框*/
-.comment{
+.comment-frame {
     margin: 12px 0;
+}
+
+/*单个回复列表*/
+.comment {
+    margin-bottom: 10px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+/*二级评论大框*/
+.sub-comments {
+    border-radius: 7px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.comment-menu {
+    display: block;
+    color: #999;
+    margin-top: 5px;
+}
+
+.comment-menu .icon {
+    margin-right: 10px;
+}
+
+.comment-menu .comment-icon {
+    font-size: 15px;
+}
+
+.comment-menu .comment-icon:hover {
+    color: #499ef3;
+}
+
+.comment-menu .active {
+    color: #499ef3;
+}
+
+.comment-menu .icon:hover {
+    color: #499ef3;
 }
