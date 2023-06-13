@@ -29,12 +29,19 @@
                 浏览次数：<span th:text="${post.viewCount}"></span>
             </span>
                 <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <!--内容-->
                 <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" th:text="${post.description}"></div>
-                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <a class="col-lg-12 col-md-12 col-sm-12 col-xs-12 community-menu" th:href="@{'/publish/'+${post.id}}"
+                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><br>
+                <!--标签-->
+                <span class="label label-primary comment-tags" th:each="tag:${post.tags.split(',')}">
+                    <span class="glyphicon glyphicon-tag"></span>
+                    <span class="label label-primary" th:text="${tag}"></span>
+                </span>
+                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><br>
+                <!--编辑-->
+                <a class="community-menu" th:href="@{'/publish/'+${post.id}}"
                    th:if="${session.user != null && session.user.id == post.creator}">
-                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
-                    编辑
+                    <span class="glyphicon glyphicon-edit" aria-hidden="true">编辑</span>
                 </a>
             </div>
 
@@ -128,6 +135,11 @@
             <hr class="col-lg-12 col-md-12 col-xs-12">
             <div class="col-lg-12 col-md-12 col-xs-12">
                 <h4>相关帖子</h4>
+                <ul>
+                    <li th:each="related : ${relatedPosts}">
+                        <a th:href="@{'/post/'+${related.id}}" th:text="${related.title}"></a>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

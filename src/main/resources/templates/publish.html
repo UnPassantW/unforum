@@ -2,9 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>发布 — 某个论坛</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/forum.js"></script>
     <link rel="stylesheet" href="/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="/css/forum.css"/>
@@ -13,7 +14,7 @@
 
 <div th:insert="navigation :: nav"></div>
 
-<div class="container-fluid main" >
+<div class="container-fluid main">
     <div class="row">
         <div class="col-lg-9 col-md-12 col-xs-12">
             <h2><span class="glyphicon glyphicon-pencil" aria-hidden="true">发布内容</span></h2>
@@ -23,18 +24,42 @@
                 <input type="hidden" name="id" th:value="${id}">
                 <div class="form-group">
                     <label for="title">帖子标题:</label>
-                    <input type="text" class="form-control" th:value="${title}" id="title" name="title" placeholder="输入标题内容..."/>
+                    <input type="text" class="form-control" th:value="${title}" id="title" name="title"
+                           placeholder="输入标题内容..."/>
                 </div>
                 <div class="form-group">
                     <label for="description">帖子内容:</label>
-                    <textarea name="description" id="description" th:text="${description}" class="form-control" cols="30" rows="10"></textarea>
+                    <textarea name="description" id="description" th:text="${description}" class="form-control"
+                              cols="30" rows="10"></textarea>
                 </div>
                 <div class="form-group">
                     <label for="tag">添加标签:</label>
-                    <input type="text" class="form-control" th:value="${tag}" id="tag" name="tag" placeholder="输入标签,以，号分隔"/>
+                    <input type="text" class="form-control" th:value="${tag}"
+                           id="tag" name="tag" autocomplete="off" placeholder="输入标签，以,号分隔"
+                           onclick="showSelectTag()">
+
+                    <div id="select-tag" class="publish-tag-tab">
+                        <ul class="nav nav-tabs" role="tablist">
+                            <li role="presentation" th:each="selectTagCategory,selectTagCategoryStat: ${tags}" th:class="${selectTagCategoryStat.first ? 'active' : ''}">
+                                <a th:href="${'#' + selectTagCategory.categoryName}" aria-controls="home" role="tab"
+                                   data-toggle="tab" th:text="${selectTagCategory.categoryName}"></a>
+                            </li>
+                        </ul>
+                        <div class="tab-content">
+                            <div role="tabpanel" th:id="${selectTagCategory.categoryName}"
+                                 th:each="selectTagCategory: ${tags}"
+                                 th:class="${selectTagCategoryStat.first ? 'active tab-pane' : 'tab-pane'}">
+                                <span class="label label-info" th:each="selectTag: ${selectTagCategory.tags}">
+                                    <span class="glyphicon glyphicon-tag" onclick="selectTag(this)"
+                                          th:data-tag="${selectTag}"
+                                          th:text="${'  ' + selectTag}"> </span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="container-fluid main" >
+                <div class="container-fluid main">
                     <div class="row">
                         <div class="col-lg-9 col-md-12 col-xs-12">
                             <div class="alert-danger col-lg-12 col-md-12 col-xs-12"
@@ -56,7 +81,7 @@
             <h3>帖子发布指南</h3>
             ·帖子标题：XD<br>
             ·帖子内容：XD<br>
-            ·选择标签：选择一个或多个标签，使用逗号隔开，每个标签不超过10个字<br>
+            ·选择标签：选择一个或多个标签，使用逗号隔开<br>
         </div>
     </div>
 </div>

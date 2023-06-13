@@ -1,6 +1,5 @@
 package com.unpassant.unforum.service;
 
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,12 +11,14 @@ import com.unpassant.unforum.mapper.PostMapper;
 import com.unpassant.unforum.mapper.UserMapper;
 import com.unpassant.unforum.model.Post;
 import com.unpassant.unforum.model.User;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PostService {
@@ -62,8 +63,11 @@ public class PostService {
 
         //定义分页
         IPage ipage = new Page(page, size);
+        //倒序排列
+        QueryWrapper<Post> qw = new QueryWrapper<>();
+        qw.orderByDesc("gmt_create");
         //分页查询
-        postMapper.selectPage(ipage,null);
+        postMapper.selectPage(ipage,qw);
         List<Post> posts = ipage.getRecords();
 
         /* OLD 简单查询Post数据
@@ -96,7 +100,6 @@ public class PostService {
     //查找某用户所发的帖子
     public PaginationDTO list(int userId, Integer page, Integer size) {
         PaginationDTO paginationDTO = new PaginationDTO();
-
 
         //定义查询条件
         QueryWrapper<Post> qw = new QueryWrapper<>();
@@ -184,4 +187,31 @@ public class PostService {
 
         postMapper.updateById(updatePost);
     }
+
+    private String dealTags(String tags){
+        // 处理 tags 。按照逗号分割。
+        String[] tagsArr = StringUtils.split(tags, ",");
+        String tempTags = StringUtils.join(tagsArr, "|");
+        String format = "tags REGEXP '(%s)'";
+        String result = String.format(format, tempTags);
+        return  result;
+    }
+    public List<PostDTO> selectRelated(PostDTO postDTO) {
+        if (StringUtils.isBlank(postDTO.getTags())){
+            return new ArrayList<>();
+        }
+        QueryWrapper<Post> qw = new QueryWrapper<>();
+        qw.orderByDesc("gmt_create");//时间倒序
+        qw.ne("id",postDTO.getId());//排除自己
+        qw.apply(dealTags(postDTO.getTags()));//拼接正则表达式
+
+        List<Post> posts = postMapper.selectList(qw);
+        List<PostDTO> postDTOS = posts.stream().map(p -> {
+            PostDTO tempPostDTO1 = new PostDTO();
+            BeanUtils.copyProperties(p,tempPostDTO1);
+            return tempPostDTO1;
+        }).collect(Collectors.toList());
+        return postDTOS;
+    }
+
 }

@@ -1,9 +1,11 @@
 package com.unpassant.unforum.controller;
 
+import com.unpassant.unforum.cache.TagCache;
 import com.unpassant.unforum.dto.PostDTO;
 import com.unpassant.unforum.model.Post;
 import com.unpassant.unforum.model.User;
 import com.unpassant.unforum.service.PostService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +19,8 @@ public class PublishController {
     private PostService postService;
 
     @GetMapping("/publish")
-    public String publish(){
+    public String publish(Model model){
+        model.addAttribute("tags", TagCache.get());
         return "publish";
     }
 
@@ -34,6 +37,7 @@ public class PublishController {
         model.addAttribute("title",title);
         model.addAttribute("description",description);
         model.addAttribute("tag",tag);
+        model.addAttribute("tags", TagCache.get());
 
         //非空条件判断
         if(title == null || title.equals("")){
@@ -46,6 +50,11 @@ public class PublishController {
         }
         if(tag == null || tag.equals("")){
             model.addAttribute("error","标签不能为空");
+            return "publish";
+        }
+        String invalid = TagCache.filterInvalid(tag);
+        if (StringUtils.isNotBlank(invalid)){
+            model.addAttribute("error","输入了不规范的标签:"+ invalid);
             return "publish";
         }
 
@@ -80,6 +89,8 @@ public class PublishController {
         model.addAttribute("description",post.getDescription());
         model.addAttribute("tag",post.getTags());
         model.addAttribute("id",post.getId());
+
+        model.addAttribute("tags", TagCache.get());
 
         return "publish";
     }

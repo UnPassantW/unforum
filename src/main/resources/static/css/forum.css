@@ -60,6 +60,12 @@ body {
     margin-top: 5px;
 }
 
+/*评论标签样式*/
+.comment-tags{
+    margin: 0 5px;
+    font-size: 13px;
+}
+
 .comment-menu .icon {
     margin-right: 10px;
 }
@@ -78,4 +84,16 @@ body {
 
 .comment-menu .icon:hover {
     color: #499ef3;
+}
+
+/*标签框*/
+.publish-tag-tab{
+    display: none;
+    margin-top: 10px;
+    padding-top: 10px;
+}
+.publish-tag-tab .label-info{
+    margin: 5px 5px ;
+    white-space: normal;
+    display: inline-block;
 }

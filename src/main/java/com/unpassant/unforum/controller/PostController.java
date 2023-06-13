@@ -3,6 +3,7 @@ package com.unpassant.unforum.controller;
 import com.unpassant.unforum.dto.CommentDTO;
 import com.unpassant.unforum.dto.PostDTO;
 import com.unpassant.unforum.enums.CommentTypeEnum;
+import com.unpassant.unforum.model.Post;
 import com.unpassant.unforum.service.CommentService;
 import com.unpassant.unforum.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,9 @@ public class PostController {
     public String post(@PathVariable(name = "id") Integer id, Model model){
         PostDTO postDTO = postService.selectById(id);
 
+        //根据TAG查询相关问题
+        List<PostDTO> relatedPosts = postService.selectRelated(postDTO);
+
         List<CommentDTO> comments = commentService.listByTargetId(id, CommentTypeEnum.QUESTION);
 
         //增加阅读数
@@ -32,6 +36,7 @@ public class PostController {
 
         model.addAttribute("post",postDTO);
         model.addAttribute("comments",comments);
+        model.addAttribute("relatedPosts",relatedPosts);
         return "post";
     }
 
