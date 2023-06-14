@@ -1,14 +1,14 @@
 #端口号
 server:
-  port: 1310
+  port: 80
 
 #JDBC
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/unforum
-    username: root
-    password: 13155
+    url: jdbc:mysql://43.139.81.254/unforum?useSSL=false&serverTimezone=GMT&characterEncoding=utf8
+    username: unpassant
+    password: 1940097836
     type: com.alibaba.druid.pool.DruidDataSource
 
 #accessToken数据
@@ -16,7 +16,7 @@ github:
   client:
     id: 73f8ee46b1910380454e
     secret: 0a99eb611354abac7d43c90af75e74b681a9d8aa
-    Redirect_uri: http://localhost:1310/callback
+    Redirect_uri: http://43.139.81.254/callback
 
 #数据库驼峰转换
 mybatis-plus:
@@ -37,3 +37,4 @@ logging:
     rollingpolicy:
       max-history: 10
       max-file-size: 30MB
+
