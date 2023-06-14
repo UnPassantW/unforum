@@ -22,18 +22,18 @@ public class CommentController {
     private CommentService commentService;
 
     @ResponseBody
-    @RequestMapping(value = "/comment",method = RequestMethod.POST)
+    @RequestMapping(value = "/comment", method = RequestMethod.POST)
     public Object post(@RequestBody CommentCreateDTO commentCreateDTO,
-                       HttpServletRequest request){
+                       HttpServletRequest request) {
 
         //校验当前是否登录
         User user = (User) request.getSession().getAttribute("user");
-        if (user == null){
+        if (user == null) {
             return ResultDTO.errorOf(CustomErrorCode.NO_LOGIN);
         }
 
         //校验评论内容是否为空
-        if (commentCreateDTO == null || StringUtils.isBlank(commentCreateDTO.getContent())){
+        if (commentCreateDTO == null || StringUtils.isBlank(commentCreateDTO.getContent())) {
             return ResultDTO.errorOf(CustomErrorCode.CONTENT_IS_EMPTY);
         }
 
@@ -45,13 +45,13 @@ public class CommentController {
         comment.setGmtModified(System.currentTimeMillis());
         comment.setCommentator(user.getId());
         comment.setLikeCount(0L);
-        commentService.insert(comment);
+        commentService.insert(comment, user);
         return ResultDTO.okOf();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/comment/{id}",method = RequestMethod.GET)
-    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id") Integer id){
+    @RequestMapping(value = "/comment/{id}", method = RequestMethod.GET)
+    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id") Integer id) {
         List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT);
         return ResultDTO.okOf(commentDTOS);
     }

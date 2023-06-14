@@ -3,12 +3,16 @@ package com.unpassant.unforum.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.unpassant.unforum.dto.CommentDTO;
 import com.unpassant.unforum.enums.CommentTypeEnum;
+import com.unpassant.unforum.enums.NotificationStatusEnum;
+import com.unpassant.unforum.enums.NotificationTypeEnum;
 import com.unpassant.unforum.exception.CustomErrorCode;
 import com.unpassant.unforum.exception.CustomException;
 import com.unpassant.unforum.mapper.CommentMapper;
+import com.unpassant.unforum.mapper.NotificationMapper;
 import com.unpassant.unforum.mapper.PostMapper;
 import com.unpassant.unforum.mapper.UserMapper;
 import com.unpassant.unforum.model.Comment;
+import com.unpassant.unforum.model.Notification;
 import com.unpassant.unforum.model.Post;
 import com.unpassant.unforum.model.User;
 import org.springframework.beans.BeanUtils;
@@ -30,9 +34,11 @@ public class CommentService {
     private PostMapper postMapper;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private NotificationMapper notificationMapper;
 
     @Transactional
-    public void insert(Comment comment) {
+    public void insert(Comment comment, User commentator) {
         //检查父类ID是否存在或为0
         if (comment.getParentId() == null || comment.getParentId() == 0) {
             throw new CustomException(CustomErrorCode.TARGET_PARAM_NOT_FOUND);
@@ -47,10 +53,21 @@ public class CommentService {
             if (dbcomment == null){
                 throw new CustomException(CustomErrorCode.COMMENT_NOT_FOUND);
             }
+
+            //为产生通知获取outerTitle帖子标题
+            Post dbpost = postMapper.selectById(dbcomment.getParentId());
+            if(dbpost == null){
+                throw new CustomException(CustomErrorCode.POST_NOT_FOUND);
+            }
+
             commentMapper.insert(comment);
             //增加父评论的被评论数
             dbcomment.setCommentCount(dbcomment.getCommentCount() + 1);
             commentMapper.updateById(dbcomment);
+
+
+            //产生通知
+            createNotify(comment, dbcomment.getCommentator(), commentator.getName(), dbpost.getTitle(), NotificationTypeEnum.REPLY_COMMENT, dbpost.getId());
         } else {
             //回复问题
             Post dbpost = postMapper.selectById(comment.getParentId());
@@ -58,9 +75,26 @@ public class CommentService {
                 throw new CustomException(CustomErrorCode.POST_NOT_FOUND);
             }
             commentMapper.insert(comment);
+            //增加帖子的被评论数
             dbpost.setCommentCount(dbpost.getCommentCount() + 1);
             postMapper.updateById(dbpost);
+
+            //产生通知
+            createNotify(comment, dbpost.getCreator(), commentator.getName(),dbpost.getTitle(),NotificationTypeEnum.REPLY_POST, dbpost.getId());
         }
+    }
+
+    private void createNotify(Comment comment, Integer receiver, String notifierName, String outerTitle, NotificationTypeEnum notificationType, Integer outerId) {
+        Notification notification = new Notification();
+        notification.setGmtCreate(System.currentTimeMillis());
+        notification.setType(notificationType.getType());
+        notification.setOuterId(outerId);
+        notification.setNotifier(comment.getCommentator());
+        notification.setStatus(NotificationStatusEnum.UNREAD.getStatus());
+        notification.setReceiver(receiver);
+        notification.setNotifierName(notifierName);
+        notification.setOuterTitle(outerTitle);
+        notificationMapper.insert(notification);
     }
 
     public List<CommentDTO> listByTargetId(Integer id, CommentTypeEnum type) {

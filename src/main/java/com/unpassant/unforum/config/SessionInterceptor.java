@@ -3,6 +3,7 @@ package com.unpassant.unforum.config;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.unpassant.unforum.mapper.UserMapper;
 import com.unpassant.unforum.model.User;
+import com.unpassant.unforum.service.NotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -16,6 +17,8 @@ public class  SessionInterceptor implements HandlerInterceptor {
 
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private NotificationService notificationService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -35,6 +38,11 @@ public class  SessionInterceptor implements HandlerInterceptor {
 
                     if (user != null) {
                         request.getSession().setAttribute("user", user);
+
+                        //获取未读消息数量
+                        Integer unreadCount = notificationService.unreadCount(user.getId());
+                        request.getSession().setAttribute("unreadCount", unreadCount);
+
                     }
                     break;
                 }

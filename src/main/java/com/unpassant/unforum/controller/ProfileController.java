@@ -2,6 +2,7 @@ package com.unpassant.unforum.controller;
 
 import com.unpassant.unforum.dto.PaginationDTO;
 import com.unpassant.unforum.model.User;
+import com.unpassant.unforum.service.NotificationService;
 import com.unpassant.unforum.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ public class ProfileController {
 
     @Autowired
     private PostService postService;
+    @Autowired
+    private NotificationService notificationService;
 
     @GetMapping("/profile/{action}")
     public String profile(HttpServletRequest request,
@@ -31,16 +34,18 @@ public class ProfileController {
         }
 
         if ("posts".equals(action)) {
+            PaginationDTO pagination = postService.list(user.getId(), page,size);
             model.addAttribute("section", "posts");
             model.addAttribute("sectionName", "我的帖子");
+            model.addAttribute("pagination", pagination);
         } else if ("replies".equals(action)) {
+            PaginationDTO pagination = notificationService.list(user.getId(),page,size);
             model.addAttribute("section", "replies");
             model.addAttribute("sectionName", "最新回复");
+            model.addAttribute("pagination", pagination);
         }
 
 
-        PaginationDTO pagination = postService.list(user.getId(), page,size);
-        model.addAttribute("pagination", pagination);
         return "profile";
     }
 
