@@ -90,7 +90,7 @@
             </div>
 
             <!--回复输入框-->
-            <div class="col-lg-12 col-md-12 col-xs-12" th:if="${session.user != null}">
+            <div class="col-lg-12 col-md-12 col-xs-12">
                 <h4>
                     回复帖子
                 </h4>
@@ -98,12 +98,13 @@
                 <div class="col-lg-12 col-md-12 col-xs-12 media">
                     <div class="media-left">
                         <a href="#">
-                            <img class="media-object img-rounded" th:src="${session.user.avatarUrl}">
+                            <img class="media-object img-rounded"
+                                 th:src="${session.user != null ? session.user.avatarUrl : 'image/deault-avatar.png'}">
                         </a>
                     </div>
                     <div class="media-body" style="padding-top: 10px">
                         <h5 class="media-heading">
-                            <span th:text="${session.user.name}"></span>
+                            <span th:text="${session.user != null ? session.user.name : '未登录用户'}"></span>
                         </h5>
                     </div>
                 </div>
@@ -146,6 +147,6 @@
 </div>
 </div>
 
-
+<div th:insert="footer :: foot"></div>
 </body>
 </html>

@@ -22,3 +22,18 @@ github:
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
+
+#日志
+logging:
+  file:
+    name: logs/unforum.log
+  level:
+    root: info
+    life:
+      unpassant:
+        unforum:
+          mapper: debug
+  logback:
+    rollingpolicy:
+      max-history: 10
+      max-file-size: 30MB

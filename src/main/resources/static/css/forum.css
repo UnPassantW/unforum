@@ -97,3 +97,8 @@ body {
     white-space: normal;
     display: inline-block;
 }
+.footer{
+    color: #000;
+    padding: 25px;
+    text-align: center;
+}
