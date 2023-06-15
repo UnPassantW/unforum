@@ -214,4 +214,9 @@ public class PostService {
         return postDTOS;
     }
 
+    public Integer deleteById(Integer id) {
+        int result = postMapper.deleteById(id);
+        //result为delete受影响行数
+        return  result;
+    }
 }

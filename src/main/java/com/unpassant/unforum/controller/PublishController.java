@@ -89,7 +89,6 @@ public class PublishController {
         model.addAttribute("description",post.getDescription());
         model.addAttribute("tag",post.getTags());
         model.addAttribute("id",post.getId());
-
         model.addAttribute("tags", TagCache.get());
 
         return "publish";

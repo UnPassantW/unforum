@@ -3,12 +3,12 @@
 <head>
     <title th:text="${sectionName}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="referrer" content="no-referrer">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="/css/bootstrap-theme.min.css"/>
     <link rel="stylesheet" href="/css/forum.css"/>
-    <meta name="referrer" content="no-referrer">
 </head>
 
 <body>
@@ -40,7 +40,11 @@
                         <span th:text="${#dates.format(post.gmtCreate,'yyyy-MMMM-dd  HH:mm')}"></span> ·
                         <a class="community-menu" th:href="@{'/publish/'+${post.id}}"
                            th:if="${session.user != null && session.user.id == post.creator}">
-                        <span class="glyphicon glyphicon-edit" aria-hidden="true">编辑</span>
+                            <span class="glyphicon glyphicon-edit" aria-hidden="true">编辑</span>
+                        </a>
+                        <a class="community-menu" th:href="@{'/delete/'+${post.id}}"
+                               th:if="${session.user != null && session.user.id == post.creator}">
+                            <span class="glyphicon glyphicon-trash" aria-hidden="true">删除</span>
                         </a>
                     </span>
                     </div>

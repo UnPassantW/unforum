@@ -4,7 +4,6 @@
 function post() {
     var postId = $("#post_id").val();
     var content = $("#comment_content").val();
-
     comment2target(postId, 1, content);
 }
 
@@ -31,7 +30,7 @@ function comment2target(targetId, type, content) {
                 if (response.code == 2003) {
                     var isAccepted = confirm(response.message);
                     if (isAccepted) {
-                        window.open("https://github.com/login/oauth/authorize?client_id=73f8ee46b1910380454e&redirect_uri=http://localhost:1310/callback&scpoe=user&state=1")
+                        window.open("https://github.com/login/oauth/authorize?client_id=73f8ee46b1910380454e&redirect_url=http://43.139.81.254/callback&scope=user&state=1")
                         window.localStorage.setItem("closable", true);
                     }
 
